@@ -36,4 +36,6 @@ public interface EntityView {
      * @return true, if entity view has been marked for deletion
      */
     boolean isMarkedForDelete();
+    Renderable getEntity();  // Method to retrieve the associated entity
+
 }

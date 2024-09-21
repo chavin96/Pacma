@@ -98,4 +98,9 @@ public class EntityViewImpl implements EntityView {
         // Check if this entity is marked for deletion
         return delete;
     }
+
+    @Override
+    public Renderable getEntity() {
+        return entity;
+    }
 }

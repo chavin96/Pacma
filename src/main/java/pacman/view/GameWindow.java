@@ -10,6 +10,7 @@ import javafx.scene.layout.Pane;
 import javafx.util.Duration;
 import pacman.model.engine.GameEngine;
 import pacman.model.entity.Renderable;
+import pacman.model.entity.dynamic.ghost.Ghost;
 import pacman.view.background.BackgroundDrawer;
 import pacman.view.background.StandardBackgroundDrawer;
 import pacman.view.entity.EntityView;
@@ -179,9 +180,11 @@ public class GameWindow {
     }
 
     private void showWinMessage() {
+
+        removeGhostEntities();
         Label winLabel = new Label("YOU WIN!");
         winLabel.setStyle("-fx-font-size: 20px; -fx-text-fill: white;");
-        winLabel.setLayoutX(pane.getWidth() / 2 - 48);
+        winLabel.setLayoutX(pane.getWidth() / 2 - 47);
         winLabel.setLayoutY(pane.getHeight() / 2 + 28);
         pane.getChildren().add(winLabel);
     }
@@ -226,6 +229,25 @@ public class GameWindow {
     private ImageView loadImage(String resourcePath) {
         return new ImageView(getClass().getResource(resourcePath).toExternalForm());
     }
+
+    private void removeGhostEntities() {
+    List<EntityView> ghostsToRemove = new ArrayList<>();
+    
+    for (EntityView entityView : entityViews) {
+        Renderable entity = entityView.getEntity();  // Access the entity associated with the view
+        if (entity instanceof Ghost) {  // Check if the entity is a Ghost
+            ghostsToRemove.add(entityView);  // Mark this entity view for removal
+        }
+    }
+
+    // Remove all ghost entity views from the pane
+    for (EntityView ghostView : ghostsToRemove) {
+        pane.getChildren().remove(ghostView.getNode());  // Remove ghost view from the pane
+    }
+
+    // Also remove them from the entityViews list to stop further updates
+    entityViews.removeAll(ghostsToRemove);
+}
 
     // Reset "READY!" timer when starting a new level or after a life is lost
     public void resetReadyFrames() {
