@@ -74,27 +74,52 @@ public class GameWindow {
     }
 
     private void draw() {
-        // Delay the start of the game by showing the "READY!" label for 100 frames
+        // Load all entities but freeze the game with the "READY!" label for 100 frames
         if (readyFrames > 0) {
+            // Load all entities but don't update their states (they should be visible and placed correctly)
+            List<Renderable> entities = model.getRenderables();  // Get all renderables
+    
+            // Ensure all entity views are drawn and visible, even if the game is paused
+            for (Renderable entity : entities) {
+                boolean notFound = true;
+                for (EntityView view : entityViews) {
+                    if (view.matchesEntity(entity)) {
+                        notFound = false;
+                        view.update();  // Just update the view (but no movement/logic)
+                        break;
+                    }
+                }
+    
+                if (notFound) {
+                    // Add entity views to the pane
+                    EntityView entityView = new EntityViewImpl(entity);
+                    entityViews.add(entityView);
+                    pane.getChildren().add(entityView.getNode());
+                }
+            }
+    
+            // Decrease the "readyFrames" counter
             readyFrames--;
-            return;  // Don't update entities while "READY!" is displayed
+    
+            return;  // Don't update the game entities or logic while "READY!" is displayed
         }
-
-        // Remove "READY!" label after 100 frames
-        if (readyFrames == 100) {
-            pane.getChildren().remove(readyLabel);
-            readyFrames = -1;  // Set a flag to stop this condition from repeating
+    
+        // Remove "READY!" label after 100 frames and start the game
+        if (readyFrames == 0) {
+            pane.getChildren().remove(readyLabel);  // Remove the READY! label
+            readyFrames = -1;  // Prevent this condition from repeating
         }
-
+    
+        // Continue the regular game logic after "READY!" is removed
         model.tick();  // Update the game state by advancing one tick
-
+    
         List<Renderable> entities = model.getRenderables();  // Get all renderables
-
+    
         // Mark all current entity views for deletion
         for (EntityView entityView : entityViews) {
             entityView.markForDelete();
         }
-
+    
         // Update the view for each renderable entity
         for (Renderable entity : entities) {
             boolean notFound = true;
@@ -105,24 +130,24 @@ public class GameWindow {
                     break;
                 }
             }
-
+    
             if (notFound) {
-                // Debugging: Make sure we're adding the entity's view to the pane
+                // Add the entity's view to the pane
                 EntityView entityView = new EntityViewImpl(entity);
                 entityViews.add(entityView);
                 pane.getChildren().add(entityView.getNode());  // Add to the pane
             }
         }
-
+    
         // Remove all entity views marked for deletion
         for (EntityView entityView : entityViews) {
             if (entityView.isMarkedForDelete()) {
                 pane.getChildren().remove(entityView.getNode());
             }
         }
-
+    
         entityViews.removeIf(EntityView::isMarkedForDelete);  // Clean up entity views
-
+    
         // Check if the game is over
         if (model.getGameStatus().equals("GAME OVER")) {
             showGameOver();
@@ -130,6 +155,7 @@ public class GameWindow {
             return;
         }
     }
+    
 
     // Initialize "READY!" label, score label, etc.
     private void initializeLabels() {
