@@ -157,6 +157,7 @@ public class GameWindow {
     
         // Check if the game is over
         if (model.getGameStatus().equals("GAME OVER")) {
+            removeGhostEntities();
             showGameOver();
             timeline.stop();  // Stop the game loop by stopping the Timeline
             endGameAfterDelay();  // End the game after 5 seconds
