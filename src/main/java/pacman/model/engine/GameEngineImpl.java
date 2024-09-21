@@ -4,6 +4,12 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
+
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
+import javafx.application.Platform;
+import javafx.scene.control.Label;
+import javafx.util.Duration;
 import pacman.model.entity.Renderable;
 import pacman.model.level.Level;
 import pacman.model.level.LevelImpl;
@@ -131,21 +137,37 @@ public class GameEngineImpl implements GameEngine, Subject {
         // You could also reset Pac-Man and Ghosts to their initial positions if needed
     }
 
+    public void endGameWithWin() {
+        System.out.println("YOU WIN!");
+        notifyObservers(); // Update UI with win message
+        
+        // Stop the game loop and delay before closing
+        Platform.runLater(() -> {
+            // Delay for 5 seconds before ending the game
+            Timeline delayTimeline = new Timeline(new KeyFrame(Duration.seconds(5), event -> {
+                System.exit(0); // Close the game
+            }));
+            delayTimeline.setCycleCount(1); // Run once after 5 seconds
+            delayTimeline.play();
+        });
+    }
+
 
     @Override
     public void tick() {
-        currentLevel.tick();
-        notifyObservers(); 
-
+        currentLevel.tick(); // Process current level logic
+    
         if (currentLevel.isLevelFinished()) {
-            // Transition to the next level
             currentLevelNo++;
-            if (currentLevelNo < numLevels) {
-                startLevel();  // Start the next level
+            if (currentLevelNo >= numLevels) {
+                // All levels are completed
+                System.out.println("YOU WIN!");
+                endGameWithWin(); // Call the win condition
             } else {
-                endGame();  // End the game if all levels are finished
+                startLevel(); // Start the next level if available
             }
         }
+        notifyObservers(); // Notify UI observers (e.g., for score/lives update)
     }
 
 

@@ -203,13 +203,20 @@ public class LevelImpl implements Level {
         player.down();
     }
 
+    // @Override
+    // public boolean isLevelFinished() {
+    //     return collectables.stream()
+    //             .filter(Collectable.class::isInstance)  // Filter only Collectable objects
+    //             .map(Collectable.class::cast)  // Cast to Collectable type
+    //             .noneMatch(Collectable::isCollectable);  // Check if any are still collectable
+    // }
+
     @Override
-    public boolean isLevelFinished() {
-        return collectables.stream()
-                .filter(Collectable.class::isInstance)  // Filter only Collectable objects
-                .map(Collectable.class::cast)  // Cast to Collectable type
-                .noneMatch(Collectable::isCollectable);  // Check if any are still collectable
-    }
+public boolean isLevelFinished() {
+    // All pellets are collected
+    return collectables.isEmpty();
+}
+
 
     @Override
     public int getNumLives() {

@@ -109,8 +109,13 @@ public class GameWindow {
             pane.getChildren().remove(readyLabel);  // Remove the READY! label
             readyFrames = -1;  // Prevent this condition from repeating
         }
+
+        if (model.getGameStatus().equals("YOU WIN!")) {
+            showWinMessage();
+            timeline.stop();  // Stop the game loop by stopping the Timeline
+            return;
+        }
     
-        // Continue the regular game logic after "READY!" is removed
         model.tick();  // Update the game state by advancing one tick
     
         List<Renderable> entities = model.getRenderables();  // Get all renderables
@@ -171,6 +176,14 @@ public class GameWindow {
         gameOverLabel.setStyle("-fx-font-size: 20px; -fx-text-fill: red;");
         gameOverLabel.setLayoutX(pane.getWidth() / 2 - 57);
         gameOverLabel.setLayoutY(pane.getHeight() / 2 + 28);
+    }
+
+    private void showWinMessage() {
+        Label winLabel = new Label("YOU WIN!");
+        winLabel.setStyle("-fx-font-size: 20px; -fx-text-fill: white;");
+        winLabel.setLayoutX(pane.getWidth() / 2 - 48);
+        winLabel.setLayoutY(pane.getHeight() / 2 + 28);
+        pane.getChildren().add(winLabel);
     }
 
     // Show "GAME OVER" when the player loses all lives
