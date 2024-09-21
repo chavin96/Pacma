@@ -54,14 +54,16 @@ public class Vector2D {
      */
     public static double calculateEuclideanDistance(Vector2D vector1, Vector2D vector2) {
         if (vector1 == null || vector2 == null) {
-            System.err.println("One of the vectors is null. Cannot calculate Euclidean distance.");
-            return -1;  // Alternatively, you could throw an exception or handle it in another way.
+            // Log a meaningful error message
+            System.out.println("Error: One of the vectors is null. vector1 = " + vector1 + ", vector2 = " + vector2);
+            throw new IllegalArgumentException("One of the vectors is null. Cannot calculate Euclidean distance.");
         }
-
+    
         double xDistance = vector2.getX() - vector1.getX();
         double yDistance = vector2.getY() - vector1.getY();
         return Math.sqrt(Math.pow(xDistance, 2) + Math.pow(yDistance, 2));
     }
+    
 
     @Override
     public String toString() {

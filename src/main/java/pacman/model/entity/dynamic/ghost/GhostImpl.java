@@ -72,12 +72,26 @@ public class GhostImpl implements Ghost {
     }
 
     private Vector2D getTargetLocation() {
-        // Handle the logic for determining the Ghost's target location
-        return switch (this.ghostMode) {
-            case CHASE -> this.playerPosition;  // Target Pac-Man's position in CHASE mode
-            case SCATTER -> this.targetCorner;  // Target assigned corner in SCATTER mode
-        };
+        if (this.ghostMode == GhostMode.CHASE) {
+            // Ensure playerPosition is not null
+            if (this.playerPosition != null) {
+                return this.playerPosition;
+            } else {
+                System.out.println("Player position is null. Defaulting to (0,0)");
+                return Vector2D.ZERO; // Default to a valid vector
+            }
+        } else if (this.ghostMode == GhostMode.SCATTER) {
+            // Ensure targetCorner is not null
+            if (this.targetCorner != null) {
+                return this.targetCorner;
+            } else {
+                System.out.println("Target corner is null. Defaulting to (0,0)");
+                return Vector2D.ZERO; // Default to a valid vector
+            }
+        }
+        return Vector2D.ZERO; // Fallback to a valid vector in case of an issue
     }
+    
     
     private Direction selectDirection(Set<Direction> possibleDirections) {
         if (possibleDirections.isEmpty()) {
@@ -126,6 +140,10 @@ public class GhostImpl implements Ghost {
     public double getHeight() {
         return this.boundingBox.getHeight();
     }
+
+    public void setPlayerPosition(Vector2D playerPosition) {
+        this.playerPosition = playerPosition;
+    }    
 
     @Override
     public double getWidth() {
