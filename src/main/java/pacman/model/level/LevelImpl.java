@@ -105,10 +105,12 @@ public class LevelImpl implements Level {
         return renderables.stream().filter(e -> e instanceof StaticEntity).map(e -> (StaticEntity) e).collect(
                 Collectors.toList());
     }
+    
 
     @Override
     public void tick() {
         // Handle ghost mode switching
+        updateGhostsWithPlayerPosition();
         if (tickCount == modeLengths.get(currentGhostMode)) {
             this.currentGhostMode = GhostMode.getNextGhostMode(currentGhostMode);
             for (Ghost ghost : this.ghosts) {
@@ -162,6 +164,14 @@ public class LevelImpl implements Level {
 
         tickCount++;
     }
+
+    private void updateGhostsWithPlayerPosition() {
+        Vector2D playerPosition = player.getPosition();  // Get Pac-Man's current position
+        for (Ghost ghost : ghosts) {
+            ghost.setPlayerPosition(playerPosition);  // Update each ghost with Pac-Man's position
+        }
+    }
+    
 
     @Override
     public boolean isPlayer(Renderable renderable) {
@@ -233,7 +243,6 @@ public class LevelImpl implements Level {
         if (collectable.isCollectable()) {
             collectable.collect();  // Mark the pellet as collected
             score += collectable.getPoints();  // Increase the score by the points of the pellet
-            System.out.println("Score updated: " + score);  // Debugging: Print updated score
         }
     }
 }

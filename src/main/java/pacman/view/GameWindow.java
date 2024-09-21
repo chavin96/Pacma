@@ -81,7 +81,7 @@ public class GameWindow {
         }
 
         // Remove "READY!" label after 100 frames
-        if (readyFrames == 0) {
+        if (readyFrames == 100) {
             pane.getChildren().remove(readyLabel);
             readyFrames = -1;  // Set a flag to stop this condition from repeating
         }
@@ -135,16 +135,16 @@ public class GameWindow {
     private void initializeLabels() {
         // Create the "READY!" label
         readyLabel = new Label("READY!");
-        readyLabel.setStyle("-fx-font-size: 36px; -fx-text-fill: yellow;");
-        readyLabel.setLayoutX(pane.getWidth() / 2 - 50); // Center the label
-        readyLabel.setLayoutY(pane.getHeight() / 2);     // Position near the bottom
+        readyLabel.setStyle("-fx-font-size: 20px; -fx-text-fill: yellow;");
+        readyLabel.setLayoutX(pane.getWidth() / 2 - 45); // Center the label
+        readyLabel.setLayoutY(pane.getHeight() / 2 + 28);     // Position near the bottom
         pane.getChildren().add(readyLabel);  // Add to the pane
 
         // "Game Over" label (hidden by default)
         gameOverLabel = new Label("GAME OVER!");
-        gameOverLabel.setStyle("-fx-font-size: 36px; -fx-text-fill: red;");
-        gameOverLabel.setLayoutX(pane.getWidth() / 2 - 100);
-        gameOverLabel.setLayoutY(pane.getHeight() / 2);
+        gameOverLabel.setStyle("-fx-font-size: 20px; -fx-text-fill: red;");
+        gameOverLabel.setLayoutX(pane.getWidth() / 2 - 57);
+        gameOverLabel.setLayoutY(pane.getHeight() / 2 + 28);
     }
 
     // Show "GAME OVER" when the player loses all lives
@@ -181,15 +181,6 @@ public class GameWindow {
         pane.getChildren().add(scoreLabel);
         ScoreObserver scoreObserver = new ScoreObserver(model, scoreLabel);
         model.registerObserver(scoreObserver);
-
-        // Add a label for game status and register it as an observer
-        Label statusLabel = new Label("READY!");  // Initial placeholder
-        statusLabel.setStyle("-fx-font-size: 20px; -fx-text-fill: yellow;");
-        statusLabel.setLayoutX(10);
-        statusLabel.setLayoutY(40);
-        pane.getChildren().add(statusLabel);
-        GameStatusObserver statusObserver = new GameStatusObserver(model, statusLabel);
-        model.registerObserver(statusObserver);
     }
 
     // Utility method to load images from resources
