@@ -1,6 +1,7 @@
 package pacman.view;
 
 import javafx.animation.KeyFrame;
+import javafx.animation.PauseTransition;
 import javafx.animation.Timeline;
 import javafx.application.Platform;
 import javafx.scene.Scene;
@@ -77,7 +78,6 @@ public class GameWindow {
     private void draw() {
         // Load all entities but freeze the game with the "READY!" label for 100 frames
         if (readyFrames > 0) {
-            // Load all entities but don't update their states (they should be visible and placed correctly)
             List<Renderable> entities = model.getRenderables();  // Get all renderables
     
             // Ensure all entity views are drawn and visible, even if the game is paused
@@ -114,6 +114,7 @@ public class GameWindow {
         if (model.getGameStatus().equals("YOU WIN!")) {
             showWinMessage();
             timeline.stop();  // Stop the game loop by stopping the Timeline
+            endGameAfterDelay();  // End the game after 5 seconds
             return;
         }
     
@@ -158,10 +159,10 @@ public class GameWindow {
         if (model.getGameStatus().equals("GAME OVER")) {
             showGameOver();
             timeline.stop();  // Stop the game loop by stopping the Timeline
+            endGameAfterDelay();  // End the game after 5 seconds
             return;
         }
     }
-    
 
     // Initialize "READY!" label, score label, etc.
     private void initializeLabels() {
@@ -180,7 +181,6 @@ public class GameWindow {
     }
 
     private void showWinMessage() {
-
         removeGhostEntities();
         Label winLabel = new Label("YOU WIN!");
         winLabel.setStyle("-fx-font-size: 20px; -fx-text-fill: white;");
@@ -207,15 +207,12 @@ public class GameWindow {
             livesImages.add(pacmanLife);  // Store the reference for updating
         }
     }
-    
 
     // Register observers for lives, score, and game status
     private void registerObservers() {
-        // Add a label for lives and register it as an observer
         LivesObserver livesObserver = new LivesObserver(model, livesImages);
         model.registerObserver(livesObserver);
 
-        // Add a label for score and register it as an observer
         Label scoreLabel = new Label("Score: 0");  // Initial placeholder
         scoreLabel.setStyle("-fx-font-size: 20px; -fx-text-fill: white;");
         scoreLabel.setLayoutX(10);  // Position at the top-left corner
@@ -231,27 +228,35 @@ public class GameWindow {
     }
 
     private void removeGhostEntities() {
-    List<EntityView> ghostsToRemove = new ArrayList<>();
-    
-    for (EntityView entityView : entityViews) {
-        Renderable entity = entityView.getEntity();  // Access the entity associated with the view
-        if (entity instanceof Ghost) {  // Check if the entity is a Ghost
-            ghostsToRemove.add(entityView);  // Mark this entity view for removal
+        List<EntityView> ghostsToRemove = new ArrayList<>();
+        for (EntityView entityView : entityViews) {
+            Renderable entity = entityView.getEntity();  // Access the entity associated with the view
+            if (entity instanceof Ghost) {  // Check if the entity is a Ghost
+                ghostsToRemove.add(entityView);  // Mark this entity view for removal
+            }
         }
-    }
 
-    // Remove all ghost entity views from the pane
-    for (EntityView ghostView : ghostsToRemove) {
-        pane.getChildren().remove(ghostView.getNode());  // Remove ghost view from the pane
-    }
+        // Remove all ghost entity views from the pane
+        for (EntityView ghostView : ghostsToRemove) {
+            pane.getChildren().remove(ghostView.getNode());  // Remove ghost view from the pane
+        }
 
-    // Also remove them from the entityViews list to stop further updates
-    entityViews.removeAll(ghostsToRemove);
-}
+        // Also remove them from the entityViews list to stop further updates
+        entityViews.removeAll(ghostsToRemove);
+    }
 
     // Reset "READY!" timer when starting a new level or after a life is lost
     public void resetReadyFrames() {
         readyFrames = READY_DISPLAY_TIME;
         pane.getChildren().add(readyLabel);  // Re-add the label to the pane
+    }
+
+    // End the game after a 5-second delay
+    private void endGameAfterDelay() {
+        PauseTransition delay = new PauseTransition(Duration.seconds(5));
+        delay.setOnFinished(event -> {
+            Platform.exit();  // Close the application after 5 seconds
+        });
+        delay.play();
     }
 }
