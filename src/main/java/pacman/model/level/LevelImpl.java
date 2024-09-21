@@ -7,6 +7,7 @@ import pacman.model.entity.dynamic.DynamicEntity;
 import pacman.model.entity.dynamic.ghost.Ghost;
 import pacman.model.entity.dynamic.ghost.GhostMode;
 import pacman.model.entity.dynamic.physics.PhysicsEngine;
+import pacman.model.entity.dynamic.physics.Vector2D;
 import pacman.model.entity.dynamic.player.Controllable;
 import pacman.model.entity.dynamic.player.Pacman;
 import pacman.model.entity.staticentity.StaticEntity;
@@ -15,12 +16,13 @@ import pacman.model.maze.Maze;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
- * Concrete implement of Pac-Man level
+ * Concrete implementation of Pac-Man level
  */
 public class LevelImpl implements Level {
 
@@ -36,17 +38,13 @@ public class LevelImpl implements Level {
     private GhostMode currentGhostMode;
     private int score; // Add a score field
 
-
-    public LevelImpl(JSONObject levelConfiguration,
-                     Maze maze) {
+    public LevelImpl(JSONObject levelConfiguration, Maze maze) {
         this.renderables = new ArrayList<>();
         this.maze = maze;
         this.tickCount = 0;
         this.modeLengths = new HashMap<>();
         this.currentGhostMode = GhostMode.SCATTER;
         this.score = 0; // Initialize score
-
-
         initLevel(new LevelConfigurationReader(levelConfiguration));
     }
 
@@ -76,7 +74,21 @@ public class LevelImpl implements Level {
 
         // Set up collectables
         this.collectables = new ArrayList<>(maze.getPellets());
+    }
 
+    private void checkPacmanPelletCollision() {
+        // Iterate through all pellets
+        Iterator<Renderable> pelletIterator = collectables.iterator();
+        while (pelletIterator.hasNext()) {
+            Renderable pellet = pelletIterator.next();
+            if (pellet instanceof Collectable && 
+                player.getBoundingBox().collidesWith(player.getDirection(), pellet.getBoundingBox())) {
+                // Pac-Man collected the pellet
+                Collectable collectable = (Collectable) pellet;
+                collect(collectable);  // Updates the score and removes the pellet
+                pelletIterator.remove();  // Remove the pellet from the list
+            }
+        }
     }
 
     @Override
@@ -96,17 +108,16 @@ public class LevelImpl implements Level {
 
     @Override
     public void tick() {
+        // Handle ghost mode switching
         if (tickCount == modeLengths.get(currentGhostMode)) {
-
-            // update ghost mode
             this.currentGhostMode = GhostMode.getNextGhostMode(currentGhostMode);
             for (Ghost ghost : this.ghosts) {
                 ghost.setGhostMode(this.currentGhostMode);
             }
-
             tickCount = 0;
         }
 
+        // Pac-Man image switch logic
         if (tickCount % Pacman.PACMAN_IMAGE_SWAP_TICK_COUNT == 0) {
             this.player.switchImage();
         }
@@ -119,10 +130,17 @@ public class LevelImpl implements Level {
             dynamicEntity.update();
         }
 
+        // Check Pac-Man and pellet collisions
+        checkPacmanPelletCollision();
+
+        // Notify observers about changes in the game state
+        // notifyObservers();
+
+        // Handle collisions between dynamic entities and static entities
         for (int i = 0; i < dynamicEntities.size(); ++i) {
             DynamicEntity dynamicEntityA = dynamicEntities.get(i);
 
-            // handle collisions between dynamic entities
+            // Handle dynamic entity to dynamic entity collisions
             for (int j = i + 1; j < dynamicEntities.size(); ++j) {
                 DynamicEntity dynamicEntityB = dynamicEntities.get(j);
 
@@ -133,7 +151,7 @@ public class LevelImpl implements Level {
                 }
             }
 
-            // handle collisions between dynamic entities and static entities
+            // Handle dynamic entity to static entity collisions
             for (StaticEntity staticEntity : getStaticEntities()) {
                 if (dynamicEntityA.collidesWith(staticEntity)) {
                     dynamicEntityA.collideWith(this, staticEntity);
@@ -182,8 +200,6 @@ public class LevelImpl implements Level {
                 .map(Collectable.class::cast)  // Cast to Collectable type
                 .noneMatch(Collectable::isCollectable);  // Check if any are still collectable
     }
-    
-
 
     @Override
     public int getNumLives() {
@@ -203,7 +219,8 @@ public class LevelImpl implements Level {
 
     @Override
     public void handleGameEnd() {
-
+        System.out.println("Game Over!");
+        // notifyObservers();  // Notify observers about the game status
     }
 
     @Override
@@ -215,8 +232,8 @@ public class LevelImpl implements Level {
     public void collect(Collectable collectable) {
         if (collectable.isCollectable()) {
             collectable.collect();  // Mark the pellet as collected
-            score += collectable.getPoints();  // Increase the score
+            score += collectable.getPoints();  // Increase the score by the points of the pellet
+            System.out.println("Score updated: " + score);  // Debugging: Print updated score
         }
     }
-
 }

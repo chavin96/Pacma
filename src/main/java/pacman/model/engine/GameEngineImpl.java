@@ -135,6 +135,7 @@ public class GameEngineImpl implements GameEngine, Subject {
     @Override
     public void tick() {
         currentLevel.tick();
+        notifyObservers(); 
 
         if (currentLevel.isLevelFinished()) {
             // Transition to the next level
