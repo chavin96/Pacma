@@ -38,6 +38,11 @@ public interface GameEngine {
     void startGame();
 
     /**
+     * Starts the game and initializes the game state.
+     */
+    void endGame();
+
+    /**
      * Moves the player up in the game.
      */
     void moveUp();

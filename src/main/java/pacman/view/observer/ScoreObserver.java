@@ -18,7 +18,8 @@ public class ScoreObserver implements Observer {
 
     @Override
     public void update() {
-        int score = gameEngine.getScore(); // You need to ensure GameEngine has getScore()
-        Platform.runLater(() -> scoreLabel.setText("Score: " + score));
+        int score = gameEngine.getScore();
+        Platform.runLater(() -> scoreLabel.setText("Score: " + score));  // Update score label on UI thread
     }
 }
+

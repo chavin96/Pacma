@@ -177,8 +177,13 @@ public class LevelImpl implements Level {
 
     @Override
     public boolean isLevelFinished() {
-        return collectables.isEmpty();
+        return collectables.stream()
+                .filter(Collectable.class::isInstance)  // Filter only Collectable objects
+                .map(Collectable.class::cast)  // Cast to Collectable type
+                .noneMatch(Collectable::isCollectable);  // Check if any are still collectable
     }
+    
+
 
     @Override
     public int getNumLives() {
@@ -191,6 +196,9 @@ public class LevelImpl implements Level {
 
     @Override
     public void handleLoseLife() {
+        numLives--;
+        player.reset();  // Reset Pac-Man’s position
+        ghosts.forEach(Ghost::reset);  // Reset ghosts' positions
     }
 
     @Override
@@ -205,7 +213,10 @@ public class LevelImpl implements Level {
 
     @Override
     public void collect(Collectable collectable) {
-        score += collectable.getPoints(); // Increase score when a collectable is collected
-        collectable.collect();
+        if (collectable.isCollectable()) {
+            collectable.collect();  // Mark the pellet as collected
+            score += collectable.getPoints();  // Increase the score
+        }
     }
+
 }

@@ -72,37 +72,31 @@ public class GhostImpl implements Ghost {
     }
 
     private Vector2D getTargetLocation() {
-        if (this.ghostMode == GhostMode.CHASE && this.playerPosition != null) {
-            return this.playerPosition;
-        } else if (this.ghostMode == GhostMode.SCATTER) {
-            return this.targetCorner;
-        }
-        // Default target if something goes wrong
-        return this.startingPosition; // Ensure there's always a non-null target location
+        // Handle the logic for determining the Ghost's target location
+        return switch (this.ghostMode) {
+            case CHASE -> this.playerPosition;  // Target Pac-Man's position in CHASE mode
+            case SCATTER -> this.targetCorner;  // Target assigned corner in SCATTER mode
+        };
     }
     
-
     private Direction selectDirection(Set<Direction> possibleDirections) {
         if (possibleDirections.isEmpty()) {
-            return currentDirection;
+            return currentDirection;  // No possible directions to move
         }
     
         Map<Direction, Double> distances = new HashMap<>();
     
         for (Direction direction : possibleDirections) {
-            // ghosts never choose to reverse travel
-            if (direction != currentDirection.opposite()) {
-                // This is where one of the vectors might be null
+            if (direction != currentDirection.opposite()) {  // Prevent reversing direction
                 distances.put(direction, Vector2D.calculateEuclideanDistance(
-                    this.kinematicState.getPotentialPosition(direction), 
-                    this.targetLocation
-                ));
+                        this.kinematicState.getPotentialPosition(direction), this.targetLocation));
             }
         }
     
-        // select the direction that will reach the target location fastest
+        // Select the direction that gets closest to the target
         return Collections.min(distances.entrySet(), Map.Entry.comparingByValue()).getKey();
     }
+    
     
 
     @Override
@@ -119,9 +113,9 @@ public class GhostImpl implements Ghost {
     @Override
     public void collideWith(Level level, Renderable renderable) {
         if (level.isPlayer(renderable)) {
-            level.handleLoseLife();
+            level.handleLoseLife();  // Pac-Man loses a life
         }
-    }
+    }    
 
     @Override
     public Vector2D getPositionBeforeLastUpdate() {

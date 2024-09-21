@@ -120,10 +120,33 @@ public class GameEngineImpl implements GameEngine, Subject {
     }
 
     @Override
+    public void endGame() {
+        System.out.println("Game Over!");
+
+        // Notify observers about the game status
+        notifyObservers(); 
+
+        // Stop the game logic (optional, depending on your game loop)
+        currentLevel = null;
+        // You could also reset Pac-Man and Ghosts to their initial positions if needed
+    }
+
+
+    @Override
     public void tick() {
         currentLevel.tick();
-        notifyObservers(); // Notify observers
+
+        if (currentLevel.isLevelFinished()) {
+            // Transition to the next level
+            currentLevelNo++;
+            if (currentLevelNo < numLevels) {
+                startLevel();  // Start the next level
+            } else {
+                endGame();  // End the game if all levels are finished
+            }
+        }
     }
+
 
     @Override
     public int getNumLives() {
@@ -143,7 +166,9 @@ public class GameEngineImpl implements GameEngine, Subject {
 
     @Override
     public String getGameStatus() {
-        // Simple logic for demo purposes
+        if (currentLevel == null) {
+            return "GAME OVER";
+        }
         if (currentLevel.isLevelFinished()) {
             return "YOU WIN!";
         } else if (currentLevel.getNumLives() <= 0) {
@@ -152,6 +177,7 @@ public class GameEngineImpl implements GameEngine, Subject {
             return "READY!";
         }
     }
+    
 
     // Observer pattern methods
     @Override
