@@ -162,7 +162,7 @@ public class GameWindow {
         // Create the "READY!" label
         readyLabel = new Label("READY!");
         readyLabel.setStyle("-fx-font-size: 20px; -fx-text-fill: yellow;");
-        readyLabel.setLayoutX(pane.getWidth() / 2 - 45); // Center the label
+        readyLabel.setLayoutX(pane.getWidth() / 2 - 35); // Center the label
         readyLabel.setLayoutY(pane.getHeight() / 2 + 28);     // Position near the bottom
         pane.getChildren().add(readyLabel);  // Add to the pane
 

@@ -10,7 +10,7 @@
         "scatter": 1.0
       },
       "modeLengths": {
-        "chase" : 10,
+        "chase" : 50,
         "scatter": 20
       }
     },
