@@ -29,14 +29,14 @@ import java.util.List;
  */
 public class GameEngineImpl implements GameEngine, Subject {
 
-    private static GameEngineImpl instance; // Singleton instance
+    private static GameEngineImpl instance;
 
     private Level currentLevel;
     private int numLevels;
     private int currentLevelNo;
     private Maze maze;
     private JSONArray levelConfigs;
-    private final List<Observer> observers; // List to hold observers
+    private final List<Observer> observers;
 
     // Private constructor for Singleton pattern
     private GameEngineImpl(JSONObject config) {
@@ -63,7 +63,6 @@ public class GameEngineImpl implements GameEngine, Subject {
     private void init(JSONObject config) {
         // Set up map
         String mapFile = (String) config.get("mapFile");
-        System.out.println("Map file: " + mapFile);  // Debugging line
         MazeCreator mazeCreator = new MazeCreator(mapFile);
         this.maze = mazeCreator.createMaze();
         this.maze.setNumLives(((Long) config.get("numLives")).intValue());
@@ -79,7 +78,7 @@ public class GameEngineImpl implements GameEngine, Subject {
     @Override
     public List<Renderable> getRenderables() {
         if (currentLevel == null) {
-            System.out.println("currentLevel is null!");  // Debugging line
+            System.out.println("currentLevel is null!");
         }
         return this.currentLevel.getRenderables();
     }
@@ -87,31 +86,31 @@ public class GameEngineImpl implements GameEngine, Subject {
     @Override
     public void moveUp() {
         currentLevel.moveUp();
-        notifyObservers(); // Notify observers
+        notifyObservers();
     }
 
     @Override
     public void moveDown() {
         currentLevel.moveDown();
-        notifyObservers(); // Notify observers
+        notifyObservers();
     }
 
     @Override
     public void moveLeft() {
         currentLevel.moveLeft();
-        notifyObservers(); // Notify observers
+        notifyObservers();
     }
 
     @Override
     public void moveRight() {
         currentLevel.moveRight();
-        notifyObservers(); // Notify observers
+        notifyObservers();
     }
 
     @Override
     public void startGame() {
         startLevel();
-        notifyObservers(); // Notify observers
+        notifyObservers();
     }
 
     private void startLevel() {
@@ -119,35 +118,28 @@ public class GameEngineImpl implements GameEngine, Subject {
             throw new RuntimeException("No levels configured!");
         }
         JSONObject levelConfig = (JSONObject) levelConfigs.get(currentLevelNo);
-        System.out.println("Starting level: " + currentLevelNo);  // Debugging line
+        System.out.println("Starting level: " + currentLevelNo);
         maze.reset();
         this.currentLevel = new LevelImpl(levelConfig, maze);
-        notifyObservers(); // Notify observers
+        notifyObservers();
     }
 
     @Override
     public void endGame() {
-        System.out.println("Game Over!");
-
-        // Notify observers about the game status
         notifyObservers(); 
-
-        // Stop the game logic (optional, depending on your game loop)
         currentLevel = null;
-        // You could also reset Pac-Man and Ghosts to their initial positions if needed
     }
 
     public void endGameWithWin() {
         System.out.println("YOU WIN!");
-        notifyObservers(); // Update UI with win message
+        notifyObservers();
         
-        // Stop the game loop and delay before closing
         Platform.runLater(() -> {
             // Delay for 5 seconds before ending the game
             Timeline delayTimeline = new Timeline(new KeyFrame(Duration.seconds(5), event -> {
-                System.exit(0); // Close the game
+                System.exit(0);
             }));
-            delayTimeline.setCycleCount(1); // Run once after 5 seconds
+            delayTimeline.setCycleCount(1);
             delayTimeline.play();
         });
     }
@@ -155,19 +147,19 @@ public class GameEngineImpl implements GameEngine, Subject {
 
     @Override
     public void tick() {
-        currentLevel.tick(); // Process current level logic
+        currentLevel.tick();
     
         if (currentLevel.isLevelFinished()) {
             currentLevelNo++;
             if (currentLevelNo >= numLevels) {
                 // All levels are completed
                 System.out.println("YOU WIN!");
-                endGameWithWin(); // Call the win condition
+                endGameWithWin();
             } else {
-                startLevel(); // Start the next level if available
+                startLevel();
             }
         }
-        notifyObservers(); // Notify UI observers (e.g., for score/lives update)
+        notifyObservers();
     }
 
 

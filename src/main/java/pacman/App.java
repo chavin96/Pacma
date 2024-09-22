@@ -16,7 +16,6 @@ public class App extends Application {
     @Override
     public void start(Stage primaryStage) {
         try {
-            // Load the config.json as an InputStream
             InputStream configStream = getClass().getResourceAsStream("/config.json");
             if (configStream == null) {
                 throw new RuntimeException("Configuration file not found!");
