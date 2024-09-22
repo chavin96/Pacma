@@ -1,40 +1,44 @@
 package pacman.view.observer;
 
 import javafx.application.Platform;
-import javafx.scene.control.Label;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+import javafx.scene.layout.HBox;
 import pacman.model.engine.GameEngine;
 
 /**
- * Observer to update the number of lives on the UI.
+ * Observer to update the number of lives on the UI using images.
  */
 public class LivesObserver implements Observer {
     private final GameEngine gameEngine;
-    private final Label livesLabel;  // Reference to the lives label
+    private final HBox livesBox;  // Container for the lives images
 
-    public LivesObserver(GameEngine gameEngine, Label livesLabel) {
+    public LivesObserver(GameEngine gameEngine, HBox livesBox) {
         this.gameEngine = gameEngine;
-        this.livesLabel = livesLabel;
+        this.livesBox = livesBox;
     }
 
     @Override
     public void update() {
         Platform.runLater(() -> {
-            // Update the lives label with the current number of lives
-            livesLabel.setText(generateLivesText(gameEngine.getNumLives()));
+            // Clear the previous lives
+            livesBox.getChildren().clear();
+
+            // Add images representing the number of lives left
+            addLivesImages(gameEngine.getNumLives());
         });
     }
 
-    // Method to generate the "X" representation for lives
-    private String generateLivesText(int numLives) {
-        StringBuilder livesText = new StringBuilder();
-        for (int i = 0; i < numLives; i++) {
-            livesText.append("X");
+    // Method to generate the image representation for lives
+    private void addLivesImages(int numLives) {
+        Image pacmanLifeImage = new Image(getClass().getResource("/maze/pacman/playerRight.png").toExternalForm());
 
-            // Add spacing between each "X" except the last one
-            if (i < numLives - 1) {
-                livesText.append("  ");  // Two spaces for ~4px padding
-            }
+        for (int i = 0; i < numLives; i++) {
+            ImageView pacmanLife = new ImageView(pacmanLifeImage);
+            pacmanLife.setFitHeight(20);  // Set the size of the life icon
+            pacmanLife.setFitWidth(20);   // Set the size of the life icon
+
+            livesBox.getChildren().add(pacmanLife);  // Add the life image to the container
         }
-        return livesText.toString();
     }
 }

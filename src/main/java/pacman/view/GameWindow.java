@@ -7,6 +7,7 @@ import javafx.application.Platform;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.image.ImageView;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.util.Duration;
 import pacman.model.engine.GameEngine;
@@ -17,7 +18,6 @@ import pacman.view.background.StandardBackgroundDrawer;
 import pacman.view.entity.EntityView;
 import pacman.view.entity.EntityViewImpl;
 import pacman.view.keyboard.KeyboardInputHandler;
-import pacman.view.observer.GameStatusObserver;
 import pacman.view.observer.LivesObserver;
 import pacman.view.observer.ScoreObserver;
 
@@ -30,12 +30,12 @@ public class GameWindow {
     private Label readyLabel;
     private int readyFrames = READY_DISPLAY_TIME;
     private Timeline timeline;
-    private Label livesLabel;  // Label to display the number of lives
     private Label gameOverLabel;
     private final Pane pane;
     private final Scene scene;
     private final GameEngine model;
     private final List<EntityView> entityViews;
+    private HBox livesBox;
 
     private final List<ImageView> livesImages;  // For displaying lives as Pac-Man images
 
@@ -181,31 +181,18 @@ public class GameWindow {
         gameOverLabel.setLayoutX(pane.getWidth() / 2 - 57);
         gameOverLabel.setLayoutY(pane.getHeight() / 2 + 28);
 
-        livesLabel = new Label(generateLivesText(model.getNumLives()));
-        livesLabel.setStyle("-fx-font-size: 20px; -fx-text-fill: white;");
-        livesLabel.layoutXProperty().bind(scene.widthProperty().multiply(0).add(10));  // 10px from the left
-        livesLabel.layoutYProperty().bind(scene.heightProperty().subtract(35));  // 10px from the bottom, adjust for label height    
-        pane.getChildren().add(livesLabel);
+        // Create the "Lives" box at the left bottom with 10px padding
+        livesBox = new HBox(4);  // Set a 4px spacing between images
+        livesBox.setLayoutX(10);  // 10px from the left
+        livesBox.setLayoutY(545);  // Adjust for your layout, 10px from the bottom
+
+        pane.getChildren().add(livesBox);
+
+        // Register the LivesObserver to update the livesBox dynamically
+        LivesObserver livesObserver = new LivesObserver(model, livesBox);
+        model.registerObserver(livesObserver);
     }
     
-
-    private String generateLivesText(int numLives) {
-        StringBuilder livesText = new StringBuilder();
-        
-        for (int i = 0; i < numLives; i++) {
-            livesText.append("X");
-            
-            // Add spacing between each "X" except the last one
-            if (i < numLives - 1) {
-                livesText.append("  ");  // Two spaces for visual padding (~4px)
-            }
-        }
-        
-        return livesText.toString();
-    }
-    
-    
-
     private void showWinMessage() {
         removeGhostEntities();
         Label winLabel = new Label("YOU WIN!");
@@ -237,22 +224,17 @@ public class GameWindow {
     // Register observers for lives, score, and game status
     private void registerObservers() {
         // Add a label for lives and register it as an observer
-        LivesObserver livesObserver = new LivesObserver(model, livesLabel);
+        LivesObserver livesObserver = new LivesObserver(model, livesBox);  // Pass the HBox instead of a Label
         model.registerObserver(livesObserver);
 
         // Add a label for score and register it as an observer
         Label scoreLabel = new Label("Score: 0");
         scoreLabel.setStyle("-fx-font-size: 20px; -fx-text-fill: white;");
         scoreLabel.setLayoutX(10);  // Position at the top-left corner
-        scoreLabel.setLayoutY(10);
+        scoreLabel.setLayoutY(15);
         pane.getChildren().add(scoreLabel);
         ScoreObserver scoreObserver = new ScoreObserver(model, scoreLabel);
         model.registerObserver(scoreObserver);
-    }
-
-    // Utility method to load images from resources
-    private ImageView loadImage(String resourcePath) {
-        return new ImageView(getClass().getResource(resourcePath).toExternalForm());
     }
 
     private void removeGhostEntities() {
