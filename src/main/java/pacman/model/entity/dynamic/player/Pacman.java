@@ -8,6 +8,8 @@ import pacman.model.level.Level;
 
 import java.util.*;
 
+//Represents Pacman entity in Pac-Man Game according the factory method
+
 public class Pacman implements Controllable {
 
     public static final int PACMAN_IMAGE_SWAP_TICK_COUNT = 8;

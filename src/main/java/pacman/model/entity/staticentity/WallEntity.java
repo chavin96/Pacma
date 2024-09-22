@@ -50,11 +50,11 @@ public class WallEntity implements StaticEntity {
 
     @Override
     public boolean canPassThrough() {
-        return false;  // Walls cannot be passed through
+        return false; 
     }
 
     @Override
     public void reset() {
-        // Walls do not need to be reset
+        
     }
 }

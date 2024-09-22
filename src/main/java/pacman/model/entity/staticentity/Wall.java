@@ -16,7 +16,7 @@ public class Wall implements StaticEntity {
 
     @Override
     public boolean canPassThrough() {
-        return false; // Walls cannot be passed through
+        return false;
     }
 
     @Override
@@ -46,7 +46,6 @@ public class Wall implements StaticEntity {
 
     @Override
     public javafx.scene.image.Image getImage() {
-        // Return an image for the wall, or null if no visual representation is needed
         return null;
     }
 

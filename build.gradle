@@ -13,14 +13,12 @@ repositories {
 
 javafx {
     version = "17.0.2"
-    modules = ['javafx.controls', 'javafx.fxml', 'javafx.media']
+    modules = ['javafx.controls','javafx.media']
 }
 
 dependencies {
-    implementation 'org.openjfx:javafx-controls:17'
-    implementation 'org.openjfx:javafx-fxml:17'
-    implementation 'org.openjfx:javafx-base:17'
-    implementation 'org.openjfx:javafx-graphics:17'
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.1'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.8.1'
     implementation 'com.googlecode.json-simple:json-simple:1.1.1'
 }
 
@@ -31,6 +29,3 @@ test {
 application {
     mainClass = 'pacman.App'
 }
-
-sourceSets.main.resources.srcDirs = ['src/main/resources']
-

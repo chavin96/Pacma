@@ -7,9 +7,6 @@ import pacman.model.entity.dynamic.ghost.GhostMode;
 import java.util.HashMap;
 import java.util.Map;
 
-/**
- * Helper class to read JSONObject to retrieve level configuration details
- */
 public class LevelConfigurationReader {
 
     private final JSONObject levelConfiguration;

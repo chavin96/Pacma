@@ -17,9 +17,8 @@ import java.util.Map;
 import java.util.Scanner;
 
 
-/**
- * Responsible for creating renderables and storing it in the Maze
- */
+//Responsible for creating renderables and storing it in the Maze as entities
+
 public class MazeCreator {
 
     public final String fileName;

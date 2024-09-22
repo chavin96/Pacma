@@ -37,7 +37,7 @@ public class GameWindow {
     private final List<EntityView> entityViews;
     private HBox livesBox;
 
-    private final List<ImageView> livesImages;  // For displaying lives as Pac-Man images
+    private final List<ImageView> livesImages;
 
     public GameWindow(GameEngine model, int width, int height) {
         this.model = model;
@@ -77,118 +77,104 @@ public class GameWindow {
     }
 
     private void draw() {
-        // Load all entities but freeze the game with the "READY!" label for 100 frames
+        // "READY!" label for 100 frames
         if (readyFrames > 0) {
-            List<Renderable> entities = model.getRenderables();  // Get all renderables
+            List<Renderable> entities = model.getRenderables();
     
-            // Ensure all entity views are drawn and visible, even if the game is paused
             for (Renderable entity : entities) {
                 boolean notFound = true;
                 for (EntityView view : entityViews) {
                     if (view.matchesEntity(entity)) {
                         notFound = false;
-                        view.update();  // Just update the view (but no movement/logic)
+                        view.update();
                         break;
                     }
                 }
     
                 if (notFound) {
-                    // Add entity views to the pane
                     EntityView entityView = new EntityViewImpl(entity);
                     entityViews.add(entityView);
                     pane.getChildren().add(entityView.getNode());
                 }
             }
     
-            // Decrease the "readyFrames" counter
             readyFrames--;
     
-            return;  // Don't update the game entities or logic while "READY!" is displayed
+            return;
         }
     
-        // Remove "READY!" label after 100 frames and start the game
         if (readyFrames == 0) {
-            pane.getChildren().remove(readyLabel);  // Remove the READY! label
-            readyFrames = -1;  // Prevent this condition from repeating
+            pane.getChildren().remove(readyLabel); 
+            readyFrames = -1;  
         }
 
         if (model.getGameStatus().equals("YOU WIN!")) {
             showWinMessage();
-            timeline.stop();  // Stop the game loop by stopping the Timeline
-            endGameAfterDelay();  // End the game after 5 seconds
+            timeline.stop();  
+            endGameAfterDelay();  
             return;
         }
     
-        model.tick();  // Update the game state by advancing one tick
+        model.tick();
     
-        List<Renderable> entities = model.getRenderables();  // Get all renderables
-    
-        // Mark all current entity views for deletion
+        List<Renderable> entities = model.getRenderables(); 
         for (EntityView entityView : entityViews) {
             entityView.markForDelete();
         }
     
-        // Update the view for each renderable entity
         for (Renderable entity : entities) {
             boolean notFound = true;
             for (EntityView view : entityViews) {
                 if (view.matchesEntity(entity)) {
                     notFound = false;
-                    view.update();  // Update the entity view
+                    view.update(); 
                     break;
                 }
             }
     
             if (notFound) {
-                // Add the entity's view to the pane
                 EntityView entityView = new EntityViewImpl(entity);
                 entityViews.add(entityView);
-                pane.getChildren().add(entityView.getNode());  // Add to the pane
+                pane.getChildren().add(entityView.getNode());  
             }
         }
     
-        // Remove all entity views marked for deletion
         for (EntityView entityView : entityViews) {
             if (entityView.isMarkedForDelete()) {
                 pane.getChildren().remove(entityView.getNode());
             }
         }
     
-        entityViews.removeIf(EntityView::isMarkedForDelete);  // Clean up entity views
+        entityViews.removeIf(EntityView::isMarkedForDelete);  
     
         // Check if the game is over
         if (model.getGameStatus().equals("GAME OVER")) {
             removeGhostEntities();
             showGameOver();
-            timeline.stop();  // Stop the game loop by stopping the Timeline
-            endGameAfterDelay();  // End the game after 5 seconds
+            timeline.stop();  
+            endGameAfterDelay();  
             return;
         }
     }
 
-    // Initialize "READY!" label, score label, etc.
     private void initializeLabels() {
-        // Create the "READY!" label
         readyLabel = new Label("READY!");
         readyLabel.setStyle("-fx-font-size: 20px; -fx-text-fill: yellow;");
-        readyLabel.setLayoutX(pane.getWidth() / 2 - 35); // Center the label
-        readyLabel.setLayoutY(pane.getHeight() / 2 + 28);     // Position near the bottom
-        pane.getChildren().add(readyLabel);  // Add to the pane
+        readyLabel.setLayoutX(pane.getWidth() / 2 - 35);
+        readyLabel.setLayoutY(pane.getHeight() / 2 + 28);   
+        pane.getChildren().add(readyLabel);  
 
-        // "Game Over" label (hidden by default)
         gameOverLabel = new Label("GAME OVER!");
         gameOverLabel.setStyle("-fx-font-size: 20px; -fx-text-fill: red;");
         gameOverLabel.setLayoutX(pane.getWidth() / 2 - 57);
         gameOverLabel.setLayoutY(pane.getHeight() / 2 + 28);
 
-        // Create the "Lives" box at the left bottom with 10px padding
-        livesBox = new HBox(4);  // Set a 4px spacing between images
-        livesBox.setLayoutX(10);  // 10px from the left
-        livesBox.setLayoutY(545);  // Adjust for your layout, 10px from the bottom
+        livesBox = new HBox(4);  
+        livesBox.setLayoutX(10);  
+        livesBox.setLayoutY(545);  
 
         pane.getChildren().add(livesBox);
 
-        // Register the LivesObserver to update the livesBox dynamically
         LivesObserver livesObserver = new LivesObserver(model, livesBox);
         model.registerObserver(livesObserver);
     }
@@ -202,7 +188,6 @@ public class GameWindow {
         pane.getChildren().add(winLabel);
     }
 
-    // Show "GAME OVER" when the player loses all lives
     private void showGameOver() {
         pane.getChildren().add(gameOverLabel);
     }
@@ -211,26 +196,23 @@ public class GameWindow {
     private void addPacmanLives() {
         System.out.println("addPacmanLives called.");
         for (int i = 0; i < model.getNumLives(); i++) {
-            ImageView pacmanLife = new ImageView(getClass().getResource("/maze/pacman/playerRight.png").toExternalForm());  // Load Pacman life image
-            pacmanLife.setFitHeight(20);  // Resize the image as needed
+            ImageView pacmanLife = new ImageView(getClass().getResource("/maze/pacman/playerRight.png").toExternalForm()); 
+            pacmanLife.setFitHeight(20); 
             pacmanLife.setFitWidth(20);
-            pacmanLife.setLayoutX(20 + (i * 30));  // Set position for each Pac-Man icon
-            pacmanLife.setLayoutY(10);  // Display at the top of the screen
-            pane.getChildren().add(pacmanLife);  // Add to the pane
-            livesImages.add(pacmanLife);  // Store the reference for updating
+            pacmanLife.setLayoutX(20 + (i * 30)); 
+            pacmanLife.setLayoutY(10);  
+            pane.getChildren().add(pacmanLife); 
+            livesImages.add(pacmanLife); 
         }
     }
 
-    // Register observers for lives, score, and game status
     private void registerObservers() {
-        // Add a label for lives and register it as an observer
-        LivesObserver livesObserver = new LivesObserver(model, livesBox);  // Pass the HBox instead of a Label
+        LivesObserver livesObserver = new LivesObserver(model, livesBox);
         model.registerObserver(livesObserver);
 
-        // Add a label for score and register it as an observer
         Label scoreLabel = new Label("Score: 0");
         scoreLabel.setStyle("-fx-font-size: 20px; -fx-text-fill: white;");
-        scoreLabel.setLayoutX(10);  // Position at the top-left corner
+        scoreLabel.setLayoutX(10); 
         scoreLabel.setLayoutY(15);
         pane.getChildren().add(scoreLabel);
         ScoreObserver scoreObserver = new ScoreObserver(model, scoreLabel);
@@ -240,32 +222,28 @@ public class GameWindow {
     private void removeGhostEntities() {
         List<EntityView> ghostsToRemove = new ArrayList<>();
         for (EntityView entityView : entityViews) {
-            Renderable entity = entityView.getEntity();  // Access the entity associated with the view
-            if (entity instanceof Ghost) {  // Check if the entity is a Ghost
-                ghostsToRemove.add(entityView);  // Mark this entity view for removal
+            Renderable entity = entityView.getEntity(); 
+            if (entity instanceof Ghost) {
+                ghostsToRemove.add(entityView); 
             }
         }
 
-        // Remove all ghost entity views from the pane
         for (EntityView ghostView : ghostsToRemove) {
-            pane.getChildren().remove(ghostView.getNode());  // Remove ghost view from the pane
+            pane.getChildren().remove(ghostView.getNode()); 
         }
 
-        // Also remove them from the entityViews list to stop further updates
         entityViews.removeAll(ghostsToRemove);
     }
 
-    // Reset "READY!" timer when starting a new level or after a life is lost
     public void resetReadyFrames() {
         readyFrames = READY_DISPLAY_TIME;
-        pane.getChildren().add(readyLabel);  // Re-add the label to the pane
+        pane.getChildren().add(readyLabel); 
     }
 
-    // End the game after a 5-second delay
     private void endGameAfterDelay() {
         PauseTransition delay = new PauseTransition(Duration.seconds(5));
         delay.setOnFinished(event -> {
-            Platform.exit();  // Close the application after 5 seconds
+            Platform.exit();
         });
         delay.play();
     }

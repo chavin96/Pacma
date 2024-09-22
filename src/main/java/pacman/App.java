@@ -21,7 +21,6 @@ public class App extends Application {
                 throw new RuntimeException("Configuration file not found!");
             }
 
-            // Pass the input stream to your GameEngine implementation
             GameEngineImpl model = GameEngineImpl.getInstance(configStream);
 
             GameWindow window = new GameWindow(model, 448, 576);

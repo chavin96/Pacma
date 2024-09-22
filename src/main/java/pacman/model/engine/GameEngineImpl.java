@@ -25,7 +25,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Implementation of GameEngine - responsible for coordinating the Pac-Man model
+ * Implementation of GameEngine - responsible for coordinating the Pac-Man model and implemented in single pattern 
  */
 public class GameEngineImpl implements GameEngine, Subject {
 

@@ -6,10 +6,6 @@ import pacman.model.entity.dynamic.physics.Direction;
 
 import java.util.*;
 
-
-/**
- * Stores and manages the renderables for the Pac-Man game
- */
 public class Maze {
 
     private static final int MAX_CENTER_DISTANCE = 4;
@@ -27,13 +23,6 @@ public class Maze {
         this.isWall = new HashMap<>();
     }
 
-    /**
-     * Adds the renderable to maze
-     * @param renderable renderable to be added
-     * @param renderableType the renderable type
-     * @param x grid X position
-     * @param y grid Y position
-     */
     public void addRenderable(Renderable renderable, char renderableType, int x, int y) {
         if (renderable != null){
             if (renderableType == RenderableType.PACMAN){
@@ -74,9 +63,7 @@ public class Maze {
         return index * MazeCreator.RESIZING_FACTOR + MazeCreator.RESIZING_FACTOR/2;
     }
 
-    /**
-     * Updates the possible directions of the dynamic entity based on the maze configuration
-     */
+    //Updates the possible directions of the dynamic entity based on the maze configuration
     public void updatePossibleDirections(DynamicEntity dynamicEntity){
         int xTile = (int) Math.floor(dynamicEntity.getCenter().getX()/MazeCreator.RESIZING_FACTOR);
         int yTile = (int) Math.floor(dynamicEntity.getCenter().getY()/MazeCreator.RESIZING_FACTOR);
@@ -114,14 +101,7 @@ public class Maze {
         dynamicEntity.setPossibleDirections(possibleDirections);
     }
 
-
-    /**
-     * Returns true if possible directions indicates entity is at an intersection (i.e. can turn in at least 2 adjacent directions)
-     * @param possibleDirections possible directions of entity
-     * @return true, if entity is at intersection
-     */
     public static boolean isAtIntersection(Set<Direction> possibleDirections) {
-        // can turn
         if (possibleDirections.contains(Direction.LEFT) || possibleDirections.contains(Direction.RIGHT)) {
             return possibleDirections.contains(Direction.UP) ||
                     possibleDirections.contains(Direction.DOWN);
@@ -138,9 +118,6 @@ public class Maze {
         return numLives;
     }
 
-    /**
-     * Resets all renderables to starting state
-     */
     public void reset(){
         for (Renderable renderable : renderables){
             renderable.reset();

@@ -1,8 +1,6 @@
 package pacman.model.maze;
 
-/**
- * Mapping of characters used in map text files to renderable type
- */
+//Mapping of characters used in map text files to renderable type
 public interface RenderableType {
     char HORIZONTAL_WALL = '1';
     char VERTICAL_WALL = '2';

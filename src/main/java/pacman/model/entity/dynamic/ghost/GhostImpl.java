@@ -31,8 +31,8 @@ public class GhostImpl implements Ghost {
         this.boundingBox = boundingBox;
         this.kinematicState = kinematicState;
         this.startingPosition = kinematicState.getPosition();
-        this.ghostMode = ghostMode != null ? ghostMode : GhostMode.SCATTER; // Ensure default ghostMode is set
-        this.currentDirection = currentDirection != null ? currentDirection : Direction.LEFT; // Set a default direction if currentDirection is null
+        this.ghostMode = ghostMode != null ? ghostMode : GhostMode.SCATTER;
+        this.currentDirection = currentDirection != null ? currentDirection : Direction.LEFT;
         this.possibleDirections = new HashSet<>();
         this.targetCorner = targetCorner;
         this.targetLocation = getTargetLocation();
@@ -73,41 +73,36 @@ public class GhostImpl implements Ghost {
 
     private Vector2D getTargetLocation() {
         if (this.ghostMode == GhostMode.CHASE) {
-            // Ensure playerPosition is not null
             if (this.playerPosition != null) {
                 return this.playerPosition;
             } else {
-                System.out.println("Player position is null. Defaulting to (0,0)");
-                return Vector2D.ZERO; // Default to a valid vector
+                return Vector2D.ZERO;
             }
         } else if (this.ghostMode == GhostMode.SCATTER) {
-            // Ensure targetCorner is not null
             if (this.targetCorner != null) {
                 return this.targetCorner;
             } else {
-                System.out.println("Target corner is null. Defaulting to (0,0)");
-                return Vector2D.ZERO; // Default to a valid vector
+                return Vector2D.ZERO;
             }
         }
-        return Vector2D.ZERO; // Fallback to a valid vector in case of an issue
+        return Vector2D.ZERO;
     }
     
     
     private Direction selectDirection(Set<Direction> possibleDirections) {
         if (possibleDirections.isEmpty()) {
-            return currentDirection;  // No possible directions to move
+            return currentDirection;
         }
     
         Map<Direction, Double> distances = new HashMap<>();
     
         for (Direction direction : possibleDirections) {
-            if (direction != currentDirection.opposite()) {  // Prevent reversing direction
+            if (direction != currentDirection.opposite()) { 
                 distances.put(direction, Vector2D.calculateEuclideanDistance(
                         this.kinematicState.getPotentialPosition(direction), this.targetLocation));
             }
         }
     
-        // Select the direction that gets closest to the target
         return Collections.min(distances.entrySet(), Map.Entry.comparingByValue()).getKey();
     }
     
@@ -127,7 +122,7 @@ public class GhostImpl implements Ghost {
     @Override
     public void collideWith(Level level, Renderable renderable) {
         if (level.isPlayer(renderable)) {
-            level.handleLoseLife();  // Pac-Man loses a life
+            level.handleLoseLife();
         }
     }    
 
@@ -172,7 +167,6 @@ public class GhostImpl implements Ghost {
 
     @Override
     public void reset() {
-        // Return ghost to starting position
         this.kinematicState = new KinematicStateImpl.KinematicStateBuilder()
                 .setPosition(startingPosition)
                 .build();

@@ -19,7 +19,7 @@ public class ScoreObserver implements Observer {
     @Override
     public void update() {
         int score = gameEngine.getScore();
-        Platform.runLater(() -> scoreLabel.setText("Score: " + score));  // Update score label on UI thread
+        Platform.runLater(() -> scoreLabel.setText("Score: " + score));
     }
 }
 

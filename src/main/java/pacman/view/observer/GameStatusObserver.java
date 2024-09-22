@@ -4,9 +4,7 @@ import javafx.application.Platform;
 import javafx.scene.control.Label;
 import pacman.model.engine.GameEngine;
 
-/**
- * Observer to display game status messages.
- */
+//Observer to display game status messages.
 public class GameStatusObserver implements Observer {
     private final GameEngine gameEngine;
     private final Label statusLabel;
@@ -18,7 +16,7 @@ public class GameStatusObserver implements Observer {
 
     @Override
     public void update() {
-        String status = gameEngine.getGameStatus(); // Ensure GameEngine has getGameStatus()
+        String status = gameEngine.getGameStatus();
         Platform.runLater(() -> statusLabel.setText(status));
     }
 }

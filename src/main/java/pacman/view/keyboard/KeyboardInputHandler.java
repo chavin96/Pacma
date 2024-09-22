@@ -4,6 +4,8 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import pacman.model.engine.GameEngine;
 
+// Command Pattern KeyboardInputHandler
+
 public class KeyboardInputHandler {
 
     private final Command moveUpCommand;

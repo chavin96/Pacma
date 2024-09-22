@@ -21,9 +21,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-/**
- * Concrete implementation of Pac-Man level
- */
+//Concrete implementation of Pac-Man level
+
 public class LevelImpl implements Level {
 
     private static final int START_LEVEL_TIME = 200;
@@ -36,7 +35,7 @@ public class LevelImpl implements Level {
     private int numLives;
     private List<Renderable> collectables;
     private GhostMode currentGhostMode;
-    private int score; // Add a score field
+    private int score;
 
     public LevelImpl(JSONObject levelConfiguration, Maze maze) {
         this.renderables = new ArrayList<>();
@@ -44,15 +43,13 @@ public class LevelImpl implements Level {
         this.tickCount = 0;
         this.modeLengths = new HashMap<>();
         this.currentGhostMode = GhostMode.SCATTER;
-        this.score = 0; // Initialize score
+        this.score = 0;
         initLevel(new LevelConfigurationReader(levelConfiguration));
     }
 
     private void initLevel(LevelConfigurationReader levelConfigurationReader) {
-        // Fetch all renderables for the level
         this.renderables = maze.getRenderables();
 
-        // Set up player
         if (!(maze.getControllable() instanceof Controllable)) {
             throw new ConfigurationParseException("Player entity is not controllable");
         }
@@ -72,21 +69,18 @@ public class LevelImpl implements Level {
         }
         this.modeLengths = levelConfigurationReader.getGhostModeLengths();
 
-        // Set up collectables
         this.collectables = new ArrayList<>(maze.getPellets());
     }
 
     private void checkPacmanPelletCollision() {
-        // Iterate through all pellets
         Iterator<Renderable> pelletIterator = collectables.iterator();
         while (pelletIterator.hasNext()) {
             Renderable pellet = pelletIterator.next();
             if (pellet instanceof Collectable && 
                 player.getBoundingBox().collidesWith(player.getDirection(), pellet.getBoundingBox())) {
-                // Pac-Man collected the pellet
                 Collectable collectable = (Collectable) pellet;
-                collect(collectable);  // Updates the score and removes the pellet
-                pelletIterator.remove();  // Remove the pellet from the list
+                collect(collectable); 
+                pelletIterator.remove();
             }
         }
     }
@@ -135,9 +129,6 @@ public class LevelImpl implements Level {
         // Check Pac-Man and pellet collisions
         checkPacmanPelletCollision();
 
-        // Notify observers about changes in the game state
-        // notifyObservers();
-
         // Handle collisions between dynamic entities and static entities
         for (int i = 0; i < dynamicEntities.size(); ++i) {
             DynamicEntity dynamicEntityA = dynamicEntities.get(i);
@@ -166,9 +157,9 @@ public class LevelImpl implements Level {
     }
 
     private void updateGhostsWithPlayerPosition() {
-        Vector2D playerPosition = player.getPosition();  // Get Pac-Man's current position
+        Vector2D playerPosition = player.getPosition();
         for (Ghost ghost : ghosts) {
-            ghost.setPlayerPosition(playerPosition);  // Update each ghost with Pac-Man's position
+            ghost.setPlayerPosition(playerPosition); 
         }
     }
     
@@ -203,14 +194,6 @@ public class LevelImpl implements Level {
         player.down();
     }
 
-    // @Override
-    // public boolean isLevelFinished() {
-    //     return collectables.stream()
-    //             .filter(Collectable.class::isInstance)  // Filter only Collectable objects
-    //             .map(Collectable.class::cast)  // Cast to Collectable type
-    //             .noneMatch(Collectable::isCollectable);  // Check if any are still collectable
-    // }
-
     @Override
 public boolean isLevelFinished() {
     // All pellets are collected
@@ -230,14 +213,13 @@ public boolean isLevelFinished() {
     @Override
     public void handleLoseLife() {
         numLives--;
-        player.reset();  // Reset Pac-Man’s position
-        ghosts.forEach(Ghost::reset);  // Reset ghosts' positions
+        player.reset(); 
+        ghosts.forEach(Ghost::reset);
     }
 
     @Override
     public void handleGameEnd() {
         System.out.println("Game Over!");
-        // notifyObservers();  // Notify observers about the game status
     }
 
     @Override
@@ -248,8 +230,8 @@ public boolean isLevelFinished() {
     @Override
     public void collect(Collectable collectable) {
         if (collectable.isCollectable()) {
-            collectable.collect();  // Mark the pellet as collected
-            score += collectable.getPoints();  // Increase the score by the points of the pellet
+            collectable.collect();
+            score += collectable.getPoints();
         }
     }
 }
