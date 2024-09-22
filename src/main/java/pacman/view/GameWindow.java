@@ -181,12 +181,30 @@ public class GameWindow {
         gameOverLabel.setLayoutX(pane.getWidth() / 2 - 57);
         gameOverLabel.setLayoutY(pane.getHeight() / 2 + 28);
 
-        livesLabel = new Label("Lives: " + model.getNumLives());
+        livesLabel = new Label(generateLivesText(model.getNumLives()));
         livesLabel.setStyle("-fx-font-size: 20px; -fx-text-fill: white;");
         livesLabel.layoutXProperty().bind(scene.widthProperty().multiply(0).add(10));  // 10px from the left
         livesLabel.layoutYProperty().bind(scene.heightProperty().subtract(35));  // 10px from the bottom, adjust for label height    
         pane.getChildren().add(livesLabel);
     }
+    
+
+    private String generateLivesText(int numLives) {
+        StringBuilder livesText = new StringBuilder();
+        
+        for (int i = 0; i < numLives; i++) {
+            livesText.append("X");
+            
+            // Add spacing between each "X" except the last one
+            if (i < numLives - 1) {
+                livesText.append("  ");  // Two spaces for visual padding (~4px)
+            }
+        }
+        
+        return livesText.toString();
+    }
+    
+    
 
     private void showWinMessage() {
         removeGhostEntities();

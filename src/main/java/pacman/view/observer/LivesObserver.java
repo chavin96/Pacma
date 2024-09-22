@@ -9,7 +9,7 @@ import pacman.model.engine.GameEngine;
  */
 public class LivesObserver implements Observer {
     private final GameEngine gameEngine;
-    private final Label livesLabel;
+    private final Label livesLabel;  // Reference to the lives label
 
     public LivesObserver(GameEngine gameEngine, Label livesLabel) {
         this.gameEngine = gameEngine;
@@ -18,8 +18,23 @@ public class LivesObserver implements Observer {
 
     @Override
     public void update() {
-        int lives = gameEngine.getNumLives();
-        // Use Platform.runLater to ensure the UI is updated on the JavaFX Application Thread
-        Platform.runLater(() -> livesLabel.setText("Lives: " + lives));
+        Platform.runLater(() -> {
+            // Update the lives label with the current number of lives
+            livesLabel.setText(generateLivesText(gameEngine.getNumLives()));
+        });
+    }
+
+    // Method to generate the "X" representation for lives
+    private String generateLivesText(int numLives) {
+        StringBuilder livesText = new StringBuilder();
+        for (int i = 0; i < numLives; i++) {
+            livesText.append("X");
+
+            // Add spacing between each "X" except the last one
+            if (i < numLives - 1) {
+                livesText.append("  ");  // Two spaces for ~4px padding
+            }
+        }
+        return livesText.toString();
     }
 }
