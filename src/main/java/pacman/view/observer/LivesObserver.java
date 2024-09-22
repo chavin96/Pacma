@@ -1,38 +1,25 @@
 package pacman.view.observer;
 
 import javafx.application.Platform;
-import javafx.scene.image.ImageView;
+import javafx.scene.control.Label;
 import pacman.model.engine.GameEngine;
 
-import java.util.List;
-
 /**
- * Observer to update the number of lives on the UI using ImageView elements.
+ * Observer to update the number of lives on the UI.
  */
 public class LivesObserver implements Observer {
     private final GameEngine gameEngine;
-    private final List<ImageView> livesImages;
+    private final Label livesLabel;
 
-    public LivesObserver(GameEngine gameEngine, List<ImageView> livesImages) {
+    public LivesObserver(GameEngine gameEngine, Label livesLabel) {
         this.gameEngine = gameEngine;
-        this.livesImages = livesImages;
+        this.livesLabel = livesLabel;
     }
 
     @Override
     public void update() {
-        int numLives = gameEngine.getNumLives();
-
-        Platform.runLater(() -> {
-            // Ensure we have enough life images to display
-            if (numLives > livesImages.size()) {
-                System.out.println("Warning: Num lives exceeds available lives images!");
-                return;
-            }
-
-            // Update the visibility of each life image based on the number of remaining lives
-            for (int i = 0; i < livesImages.size(); i++) {
-                livesImages.get(i).setVisible(i < numLives);
-            }
-        });
+        int lives = gameEngine.getNumLives();
+        // Use Platform.runLater to ensure the UI is updated on the JavaFX Application Thread
+        Platform.runLater(() -> livesLabel.setText("Lives: " + lives));
     }
 }

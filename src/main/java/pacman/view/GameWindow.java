@@ -30,6 +30,7 @@ public class GameWindow {
     private Label readyLabel;
     private int readyFrames = READY_DISPLAY_TIME;
     private Timeline timeline;
+    private Label livesLabel;  // Label to display the number of lives
     private Label gameOverLabel;
     private final Pane pane;
     private final Scene scene;
@@ -179,6 +180,12 @@ public class GameWindow {
         gameOverLabel.setStyle("-fx-font-size: 20px; -fx-text-fill: red;");
         gameOverLabel.setLayoutX(pane.getWidth() / 2 - 57);
         gameOverLabel.setLayoutY(pane.getHeight() / 2 + 28);
+
+        livesLabel = new Label("Lives: " + model.getNumLives());
+        livesLabel.setStyle("-fx-font-size: 20px; -fx-text-fill: white;");
+        livesLabel.layoutXProperty().bind(scene.widthProperty().multiply(0).add(10));  // 10px from the left
+        livesLabel.layoutYProperty().bind(scene.heightProperty().subtract(35));  // 10px from the bottom, adjust for label height    
+        pane.getChildren().add(livesLabel);
     }
 
     private void showWinMessage() {
@@ -211,10 +218,12 @@ public class GameWindow {
 
     // Register observers for lives, score, and game status
     private void registerObservers() {
-        LivesObserver livesObserver = new LivesObserver(model, livesImages);
+        // Add a label for lives and register it as an observer
+        LivesObserver livesObserver = new LivesObserver(model, livesLabel);
         model.registerObserver(livesObserver);
 
-        Label scoreLabel = new Label("Score: 0");  // Initial placeholder
+        // Add a label for score and register it as an observer
+        Label scoreLabel = new Label("Score: 0");
         scoreLabel.setStyle("-fx-font-size: 20px; -fx-text-fill: white;");
         scoreLabel.setLayoutX(10);  // Position at the top-left corner
         scoreLabel.setLayoutY(10);
