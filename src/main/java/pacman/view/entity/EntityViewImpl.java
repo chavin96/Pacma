@@ -40,10 +40,10 @@ public class EntityViewImpl implements EntityView {
     // Determines the view order based on the entity layer (used for Z-ordering entities)
     private static double getViewOrder(Renderable.Layer layer) {
         return switch (layer) {
-            case BACKGROUND -> 100.0;
-            case FOREGROUND -> 50.0;
-            case EFFECT -> 25.0;
-            case INVISIBLE -> 0.0;
+            case BACKGROUND -> 3.0;  // Background elements like walls
+            case FOREGROUND -> 2.0;  // Entities like Pacman, Ghosts
+            case EFFECT -> 1.0;      // Special effects or foreground elements
+            case INVISIBLE -> 4.0;
         };
     }
 

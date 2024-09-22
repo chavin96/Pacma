@@ -185,7 +185,7 @@ public class GameWindow {
         removeGhostEntities();
         Label winLabel = new Label("YOU WIN!");
         winLabel.setStyle("-fx-font-size: 20px; -fx-text-fill: white;");
-        winLabel.setLayoutX(pane.getWidth() / 2 - 47);
+        winLabel.setLayoutX(pane.getWidth() / 2 - 46);
         winLabel.setLayoutY(pane.getHeight() / 2 + 28);
         pane.getChildren().add(winLabel);
     }
